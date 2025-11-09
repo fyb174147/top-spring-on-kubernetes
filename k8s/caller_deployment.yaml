@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gs-spring-boot-caller
+  labels:
+    app: gs-spring-boot-caller
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gs-spring-boot-caller
+  template:
+    metadata:
+      labels:
+        app: gs-spring-boot-caller
+    spec:
+      containers:
+        - name: hello-caller
+          image: spring-k8s/hello-caller   # 🔹 image bạn vừa build bằng mvnw
+          imagePullPolicy: Never           # vì image nằm trong Docker local
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_CLOUD_KUBERNETES_DISCOVERY_ALL_NAMESPACES
+              value: "true"
+            - name: SPRING_CLOUD_KUBERNETES_DISCOVERY_ENABLED
+              value: "true"
+            - name: HELLO_SERVICE_NAME
+              value: "gs-spring-boot-k8s"  # 🔹 tên service của hello-spring-k8s
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gs-spring-boot-caller
+spec:
+  selector:
+    app: gs-spring-boot-caller
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: LoadBalancer

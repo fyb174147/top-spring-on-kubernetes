@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: gs-spring-boot-caller
+  labels:
+    app: gs-spring-boot-caller
+spec:
+  selector:
+    app: gs-spring-boot-caller
+  ports:
+    - protocol: TCP
+      port: 8080         # cổng service bên ngoài (cluster)
+      targetPort: 8080   # cổng trong container
+  type: LoadBalancer      # Docker Desktop sẽ ánh xạ sang localhost
